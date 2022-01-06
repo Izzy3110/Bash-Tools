@@ -11,12 +11,13 @@
   - Default Log-File: /var/log/missing_apt.log - install_missing_pkg_apt.sh(4)
   - usage: 
   ```
-  Usage: install_missing_pkg_apt.sh [-h] [-a] package_name [package_name...]
+  Usage: test_pkg_installed.sh [-h] [-a] package_name [package_name...]
 
   Check for missing apt-packages and install them if missing
 
   Available options:
 
   -h, --help      Print this help and exit
+  -d              Don't log to file
   -a              Print created last lines of log-file after
   ```
