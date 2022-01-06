@@ -1,4 +1,7 @@
 #!/bin/bash
+
+/bin/bash install_missing_pkg_apt.sh gawk ping4 -a
+
 PATH="/root"
 input="${PATH}/ntp_server_de.lst"
 myArrayUrls=()
