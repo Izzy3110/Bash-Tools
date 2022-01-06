@@ -1,14 +1,15 @@
 # Bash-Tools
-Some useful bash-scripts for automation and other stuff
+### Description: Some useful bash-scripts for automation and other stuff
 
-Author: Sascha Frank (sascha.frank.88@gmx.de)
-
-License Comments: feel free to use in any case, wheter non-commercial or commercial. The Author
-
+###### Author: Sascha Frank (sascha.frank.88@gmx.de)
+###### License Comments: feel free to use in any case, wheter non-commercial or commercial. The Author
+  
+  
+  
 - ### install_missing_pkg_apt.sh - see [commit message](https://github.com/Izzy3110/Bash-Tools/commit/622fd97f2ee2b9643e19350f1de15865f381f35f) for example
 
   - Default Log-File: /var/log/missing_apt.log - install_missing_pkg_apt.sh(4)
-  - usage
+  - usage: 
   ```
   Usage: install_missing_pkg_apt.sh [-h] [-a] package_name [package_name...]
 
