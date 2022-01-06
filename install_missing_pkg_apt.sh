@@ -1,5 +1,12 @@
 #!/bin/bash
 
+
+LOG_FILE="/var/log/missing_apt.log"
+
+ERRORS_COUNT=0
+ACTION_POST_LOG_AFTER=0
+ACTION_DONT_LOG=0
+
 function join_by { local d=${1-} f=${2-}; if shift 2; then printf %s "$f" "${@/#/$d}"; fi; }
 
 function check_pkg_installed {
@@ -14,10 +21,19 @@ function check_pkg_installed {
 }
 
 
-LOG_FILE="/var/log/missing_apt.log"
+function usage {
+  cat << EOF # remove the space between << and EOF, this is due to web plugin issue
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-a] package_name [package_name...]
 
-ERRORS_COUNT=0
-ACTION_POST_LOG_AFTER=0
+Check for missing apt-packages and install them if missing
+
+Available options:
+
+-h, --help      Print this help and exit
+-a              Print created last lines of log-file after
+EOF
+  exit
+}
 
 if [[ $# -gt 1 ]]; then
     echo "> getting missing packages"
@@ -26,17 +42,19 @@ if [[ $# -gt 1 ]]; then
     for package in "$@"
     do 
         if [[ $package =~ "-a" ]];then 
-            echo "option:output log after"
             ACTION_POST_LOG_AFTER=1
         else
-            echo $package
-            result_=$(check_pkg_installed $package)
-            if [[ $result_ -ne 0 ]]; then
-                myNotInstalledPkgs+=("${package}")
+            if [[ $package =~ "-d" ]];then 
+                ACTION_DONT_LOG=1
+            else
+                result_=$(check_pkg_installed $package)
+                if [[ $result_ -ne 0 ]]; then
+                    myNotInstalledPkgs+=("${package}")
+                fi
             fi
-        fi
-        # 
+        fi 
     done
+    
     log_lines=0
     apt_str=$(join_by " " ${myNotInstalledPkgs[@]})
     if [[ ${#apt_str} -gt 0 ]]; then
@@ -50,25 +68,29 @@ if [[ $# -gt 1 ]]; then
             apt install $apt_str 2>/dev/null 1>/dev/null
             if [[ $? -eq 0 ]]; then
                 echo "< installed missing packages"
-                echo $(date +"%d.%m.%Y %T.%N")": installed $apt_str" >> ${LOG_FILE}
-                log_lines=$((log_lines+1))
+                if [[ $ACTION_DONT_LOG -eq 0 ]]; then
+                    echo $(date +"%d.%m.%Y %T.%N")": installed $apt_str" >> ${LOG_FILE}
+                    log_lines=$((log_lines+1))
+                fi
             fi
         else
             echo "not doing anything"
             ERRORS_COUNT=$((ERRORS_COUNT+1))
         fi
     else
-        echo $(date +"%d.%m.%Y %T.%N")": no packages missing" >> ${LOG_FILE}
-        log_lines=$((log_lines+1))
+        if [[ $ACTION_DONT_LOG -eq 0 ]]; then
+            echo $(date +"%d.%m.%Y %T.%N")": no packages missing" >> ${LOG_FILE}
+            log_lines=$((log_lines+1))
+        fi
         echo "< no packages missing"
     fi
-    echo $(date +"%d.%m.%Y %T.%N")": ${ERRORS_COUNT} errors detected" >> ${LOG_FILE}
-    log_lines=$((log_lines+1))
+    if [[ $ACTION_DONT_LOG -eq 0 ]]; then
+        echo $(date +"%d.%m.%Y %T.%N")": ${ERRORS_COUNT} errors detected" >> ${LOG_FILE}
+        log_lines=$((log_lines+1))
+    fi
     
 else
-    if [[ $# -gt 0 ]]; then
-        echo $#
-    fi
+    usage
 fi
     
 if [[ $ACTION_POST_LOG_AFTER -eq 1 ]]; then
