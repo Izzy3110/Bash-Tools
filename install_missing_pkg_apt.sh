@@ -30,6 +30,7 @@ Check for missing apt-packages and install them if missing
 Available options:
 
 -h, --help      Print this help and exit
+-d              Don't log to file
 -a              Print created last lines of log-file after
 EOF
   exit
