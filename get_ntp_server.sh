@@ -1,6 +1,8 @@
 #!/bin/bash
 
-/bin/bash install_missing_pkg_apt.sh gawk ping4 -a
+# Please edit if you changed location of install_missing_pkg_apt.sh | . = current dir ;)
+PATH_TO_SCRIPTS="."
+/bin/bash ${PATH_TO_SCRIPTS}/install_missing_pkg_apt.sh gawk ping4 -a
 
 PATH="/root"
 input="${PATH}/ntp_server_de.lst"
